@@ -1,0 +1,55 @@
+.login-container{
+  min-height: 80vh;
+  
+}
+
+.body-bg{
+        /* background-image: url(../../../assets/images/bg-image.jpg); */
+        /* background-size: contain; */
+         /* background-repeat:no-repeat; */
+         background: linear-gradient(-135deg,#c850c0,#4158d0);
+        background-size:cover; 
+        height: 609px; 
+     
+        
+    }
+
+.login-box{
+  /* background-color: #FBC252; */
+  border-radius: 4px;
+  /* background: linear-gradient(to right bottom, #EEEEEE 80%, #7F167F 10%,#FBC252 10%); */
+  background :linear-gradient(45deg, #6303B1, #ff0099);
+}
+
+.login-text{
+  font-size: 25px !important;
+}
+
+
+
+
+
+
+/* <---------------------BUTTON STYLES---------------------> */
+
+.button-icon{
+  display: inline-block;
+  margin: -3px 3px 0 0;
+}
+
+.btn-custom {
+  background :linear-gradient(45deg, #FFB100, #FBC252) !important;
+  border: none;
+  color: white;
+}
+
+
+.redirect-btn{
+  color: white;
+  text-decoration: none;
+
+}
+
+.redirect-btn :hover{
+  color:black;
+}

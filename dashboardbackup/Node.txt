@@ -1,0 +1,138 @@
+mongoDb
+
+protocol:mongodb
+PortNo : 27017
+host: localhost
+follwinf required for using mongodb atlas
+auth : no auth
+   username: no auth
+   password: bot auth
+
+
+localhost mongodb url:
+mongodb://host:portnumber/dbname
+
+mongodb+srv://<password>:<username>........ something for using mongodb atlas
+
+database is not created until and unless we define a collection.
+
+insert method is used in shell to entry data
+
+
+
+
+
+
+
+
+
+
+<------------------------------------------------------------------------------------------------>
+
+
+Note regarding error handling middleware how it works:
+    -> so I have set up the project using MVC pattern. To my understanding the routing model 
+       redirects to the next middleware eg auth_ctrl.registerProcess and this middleware
+       returns the process involved with the related route.
+    -> the next method in the register or login process if it has next() without any parameters
+       this next() points to the next middleware right next to auth_ctrl.registerProcess,...in
+       auth.routes.js.
+    -> if this next({status:400 , msg:'text message'}) exists then the ERROR HANDLER IN APP.JS 
+       is TRIGGERED.
+
+<------------------------------------------------------------------------------------------------>
+
+Note regarding fileuploader using multer how it works:
+   -> The main function uploader takes many configurations and I have used 3 of them named as
+      storage,fileFilter as in image validator and limits for limiting filesize.
+   -> storage is used for allocation storage destination for uploaded files that takes req,file and
+      cb as callback for returning required values.Req hold data, file holds file name.
+   -> filefilter is used to check or validate file datas.In this case we have used to validate 
+      file extensions and can BE USED FOR VALIDATING OTHER FILES ASWELL i.e PDF,DOCS,XLSX
+   -> Limits used for for validating file size
+
+<------------------------------------------------------------------------------------------------>
+
+Note regarding linking uploader and using the controller to access uploaded file and store in the database
+
+   -> just linking the uploader middleware with the post method in routing method inside the register endpoint
+      is enough for linking the multer uploader
+   -> inside the controller withing the registerProcess method we access the uploaded file and its name.
+   
+<------------------------------------------------------------------------------------------------>
+
+
+
+Note regarding userRegistration
+   -> different methods are called from the controller to initiate the registration or login process.
+   -> every operation that includes data storage or validation in initiated in controller
+   ->the userService class inside user.service.js receives the data from the controller.
+   ->controller receives the data from the form 
+   ->if the data mapping with the provided schemas is not correct the statement throws an exception
+   ->this exception is handled by throw statement in controller and the catch statement here is activated
+   ->in user.service.js when we are using the save function..this save function returns a promise so we need
+     await to handle this promise and as a result we are using async function.
+   ->inside the controller we import this async function from user.service.js as Userservice and make an instance
+     of this class as user_svc
+   ->then we call this object by passing the data and receive a promise with a data structure as follows
+      let result: Document<unknown, any, {
+      name: string;
+      email: string;
+      password: string;
+      status: "active" | "inactive";
+      role?: "admin" | "doctor" | "staff" | undefined; 
+      }
+   -> or receive an exception that is handled by the catch statement
+   -> Joi package used for data validation 
+   ->every function related to either validation or registering users is called from controller registerProcess
+   ->Joi package uses comma separated strings for using array type files
+
+
+Note regarding Login process
+   -> the password that was encrypted while registering cannot be decrypted so while logging in I cannot 
+      crosscheck the input password by using comparision operator
+   -> So first we need to find if the user exists in the database using Email entered and extract that user's save
+      data and use the same encrypting package to cross check.
+   -> need to generate auth token everytime we call API
+   -> after we enter the data in the form by using req.body we get the input data inside data variable in the controller.
+   -> we use getUserByemail function to send the entered email using data.email and it returns the user with
+      the matching email and we compare their passwords using bcrypt.
+   -> if the credentials match we generate the token using JWT token.
+   -> this token will be different for every login.By default this stays active for 3 hours and then the user will be logged out.
+   -> auth token is also used to for login check
+
+<----------------------------------------------------------------------------------------------------------------->
+
+
+
+ Note regarding Authorization
+   ->I have created auth.middleware.js  and appointment.routes.js
+   ->for the appointment endpoint first of all we login check if the user is logged in for that the login check middleware 
+     is initiated.
+   ->token is needed for login check which is created during API call 
+   ->then we extract the token from headers['authorization']
+
+<-------------------------------------------------------------------------------------------------------------->
+
+
+Note Regarding setting bearer token in postman while API testing
+-> inside the test feature of postman along side body params use test and set the environment token
+   pm.environment.set("TOKEN",pm.response.json().result.auth_token)
+-> create new environment and use this environment to run request and TOKEN variable has the bearer 
+   token set and use bearer {{TOKEN}} inside the headers tag.
+
+
+<---------------------------------------------------------------------------------------------->
+
+Note regarding login check
+   -> So the operation is divided into routing middleware controller function
+   -> user.services is used for database access and CRUD operation for fetching user by id
+   -> jwt.VERIFY method fetches data of the logged in user using the token used in authentication.
+   -> based on this we extract the id and fetch
+
+
+
+
+
+
+

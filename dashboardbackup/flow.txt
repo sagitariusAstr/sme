@@ -1,0 +1,46 @@
+Overall operation: (MVC pattern)
+Routes
+    -> maps every incoming request .
+    -> then send the program flow to the controller.
+    -> we add middleware in the routes as parameters.
+Controller
+    -> controls the flow of actions
+    -> can access database
+Model
+    -> Database mapping
+
+
+-> the  next({}) property with status msg set triggers the error handling middleware in app.js from anywhere
+   in the project
+-> to catch params req.params and for query req.query
+
+-> crud operation handled by user.service.js
+-> need to work on Login UI
+
+
+//local configuration for config.json
+
+
+{
+    "development": {
+      "username": "root",
+      "password": null,
+      "database": "sme",
+      "host": "localhost",
+      "dialect": "mariadb"
+    },
+    "test": {
+      "username": "root",
+      "password": null,
+      "database": "sme",
+      "host": "localhost",
+      "dialect": "mariadb"
+    },
+    "production": {
+      "username": "root",
+      "password": null,
+      "database": "sme",
+      "host": "localhost",
+      "dialect": "mariadb"
+    }
+  }

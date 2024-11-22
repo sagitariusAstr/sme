@@ -1,0 +1,398 @@
+=> relational database
+
+query => SQL
+
+-CRUD
+    =>Create
+        -INSERT
+    => Read
+        -SELECT
+    =>
+    Update
+        -UPDATE
+
+#create a database
+    -> CREATE DATABASE <name> CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+#creating table
+    -> CREATE TABLE <tableNAME>
+        {
+            column_name_1 datatype attributes
+        }
+Eg.
+
+    CREATE TABLE users (
+        id bigint not null primary key AUTO_INCREMENT,
+        name varchar(50) not null,
+        email varchar(100) not null UNIQUE,
+        msisdn varchar(50) not null UNIQUE,
+        password varchar(150) not null,
+        role ENUM('active','inactive') default "inactive",
+        created_at datetime default CURRENT_TIMESTAMP,
+        updated_at datetime ON UPDATE CURRENT_TIMESTAMP
+
+    )
+
+
+Eg2 creating feasibilty table
+
+CREATE TABLE feasibility_reports(
+  feasibility_sent_date DATE not null ,
+  customer_name varchar(200) not null,
+  address varchar(200) not null,
+  district varchar(200) not null,
+  service_type varchar(200) not null,
+  bandwidth_primary varchar(200) not null,
+  latitude varchar(200) not null,
+  longitude varchar(200) default null,
+  site_id varchar(200) not null,
+  site_latitude varchar(200) default null,
+  site_longitude varchar(200) default null,
+  distance varchar(200) default null,
+  l1_status varchar(200) default null,
+  l1_reason varchar(200) default null,
+  l1_completion_date DATE default null,
+  port_info varchar(200) default null,
+  l2_remarks varchar(200) default null,
+  l2_reason varchar(200) default null,
+  customer_contact_name varchar(200) default null,
+  contact_number varchar(200) default null,
+  mail varchar(200) default null,
+  sam varchar(200) default null,
+)
+
+
+
+
+#INSERT 
+    => INSERT INTO <table_name>
+        (column_name,column_name_1, .....,column_name_n )
+        VALUES
+        (value1, value2, ....., value_n)
+    => INSERT INTO <table>
+        SET
+            column_name = value,
+            column_name_1 = value1
+
+
+INSERT INTO users SET
+name = "Kalpesh Budhathoki",
+email = "kalpeshbudhathoki1997@gmail.com",
+msisdn = "9803304061",
+password = "Admin1234",
+role = "admin",
+status = "active"
+
+OR,
+
+INSERT INTO users
+(name,email,msisdn,password,msisdn,role,status)
+VALUES
+("Kalpesh","kalpesh@gmail.com","123456","admin123",role="admin",status="active"), //this is to add multiple datas
+("Kalpesh","kalpesh@gmail.com","123456","admin123",role="admin",status="active"),
+("Kalpesh","kalpesh@gmail.com","123456","admin123",role="admin",status="active"),
+("Kalpesh","kalpesh@gmail.com","123456","admin123",role="admin",status="active"),
+
+
+##Update Operation
+    -UPDATE users SET 
+        column_name = New value,
+        column_name= New value,
+        .....,
+        WHERE    // if where condition is not used the update query will be implemented on all datas
+            condition
+    
+    e.g.
+        UPDATE users SET
+            role = "supervisors"
+        WHERE id = 1
+    
+#Delete Data
+
+    -DELETE FROM <table>
+        WHERE condition
+
+
+create migrations
+
+
+npx sequelize-cli migration:generate --name create_appointment_table
+
+run migration
+  npx sequelize-cli db:migrate
+
+
+<--------------------------------2 MONTH UPDATE SQL------------------------------------->
+
+SELECT quantity_sold
+FROM table_name
+WHERE name = 'John Doe'
+AND datetime_field BETWEEN '2023-05-01' AND DATE_ADD('2023-05-01', INTERVAL 30 DAY);
+
+SELECT quantity_sold
+FROM table_name
+WHERE name = 'John Doe'
+AND datetime_field BETWEEN DATE_ADD('2023-05-01', INTERVAL 31 DAY) AND DATE_ADD('2023-05-01', INTERVAL 61 DAY);
+
+
+
+<-------------------------------------2 month data fetch for all agents------------------------------->
+
+SELECT name,SUM(quantity)
+FROM sales
+WHERE role = 'Agent'
+AND start_date BETWEEN '2023-04-22 00:00:00' AND DATE_ADD('2023-04-22 00:00:00', INTERVAL 30 DAY)
+GROUP BY name;
+
+SELECT name,SUM(quantity)
+FROM sales
+WHERE role = 'Agent'
+AND start_date BETWEEN DATE_ADD('2023-04-22 00:00:00', INTERVAL 31 DAY) AND DATE_ADD('2023-04-22 00:00:00', INTERVAL 61 DAY)
+GROUP BY name;
+
+
+SEQUELIZE ABOVE query
+
+const { Sequelize, Op, Model, DataTypes } = require('sequelize');
+
+// Define your SalesModel using Sequelize
+const sequelize = new Sequelize('database', 'username', 'password', {
+  host: 'localhost',
+  dialect: 'mysql',
+});
+
+const SalesModel = sequelize.define('Sales', {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  role: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  start_date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+});
+
+// Query 1: Total quantity sold for role 'Agent' within a specific date range
+const startDate1 = new Date('2023-04-22 00:00:00');
+const endDate1 = new Date(startDate1.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+SalesModel.findAll({
+  attributes: ['name', [Sequelize.fn('SUM', Sequelize.col('quantity')), 'total_quantity']],
+  where: {
+    role: 'Agent',
+    start_date: {
+      [Op.between]: [startDate1, endDate1],
+    },
+  },
+  group: 'name',
+})
+  .then((results) => {
+    console.log('Query 1 Results:');
+    results.forEach((result) => {
+      console.log(`${result.name}: ${result.dataValues.total_quantity}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Error executing Query 1:', error);
+  });
+
+// Query 2: Total quantity sold for role 'Agent' within another specific date range
+const startDate2 = new Date(endDate1.getTime() + 1);
+const endDate2 = new Date(startDate2.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+SalesModel.findAll({
+  attributes: ['name', [Sequelize.fn('SUM', Sequelize.col('quantity')), 'total_quantity']],
+  where: {
+    role: 'Agent',
+    start_date: {
+      [Op.between]: [startDate2, endDate2],
+    },
+  },
+  group: 'name',
+})
+  .then((results) => {
+    console.log('Query 2 Results:');
+    results.forEach((result) => {
+      console.log(`${result.name}: ${result.dataValues.total_quantity}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Error executing Query 2:', error);
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+<------------------------------------------------------DYNAMIC DATA FETCH Sequelize----------------------------->
+to fetch data using dynamic date update
+
+const { Op } = require('sequelize');
+const startDate = new Date('2023-01-01');
+const endDate = new Date('2023-12-31');
+
+const Table = sequelize.define('table_name', {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  datetime_field: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  quantity_sold: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  }
+});
+
+let currentDate = new Date(startDate);
+while (currentDate <= endDate) {
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+  const startOfNextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+  const endOfNextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
+
+  const currentMonthData = await Table.findAll({
+    attributes: ['quantity_sold'],
+    where: {
+      name: 'John Doe',
+      datetime_field: {
+        [Op.between]: [startOfMonth.toISOString().slice(0, 10), endOfMonth.toISOString().slice(0, 10)]
+      }
+    }
+  });
+
+  const nextMonthData = await Table.findAll({
+    attributes: ['quantity_sold'],
+    where: {
+      name: 'John Doe',
+      datetime_field: {
+        [Op.between]: [startOfNextMonth.toISOString().slice(0, 10), endOfNextMonth.toISOString().slice(0, 10)]
+      }
+    }
+  });
+
+  // Do something with the data
+
+  // Increment currentDate to the next month
+  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 1);
+}
+
+
+
+<------------------------------------FETCH DATE OF SALES WITH FORMATTED DATE AND RANGE------------------>
+
+SELECT DATE_FORMAT(start_date, '%M %e') AS date_formatted, SUM(quantity) 
+FROM sales
+WHERE role = 'Agent'
+AND start_date BETWEEN '2023-04-22 00:00:00' AND DATE_ADD('2023-04-22 00:00:00', INTERVAL 30 DAY)
+GROUP BY start_date;
+
+
+Equivalent Sequelize
+
+
+const sequelize = require('sequelize');
+const { Op } = sequelize;
+
+const SalesModel = require('./path/to/SalesModel'); // Replace with the correct path to your SalesModel file
+
+const startDate = new Date('2023-04-22 00:00:00');
+const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+SalesModel.findAll({
+  attributes: [
+    [sequelize.literal("DATE_FORMAT(start_date, '%M %e')"), 'date_formatted'],
+    [sequelize.fn('SUM', sequelize.col('quantity')), 'total_quantity']
+  ],
+  where: {
+    role: 'Agent',
+    start_date: {
+      [Op.between]: [startDate, endDate]
+    }
+  },
+  group: ['start_date']
+})
+.then(results => {
+  console.log(results);
+})
+.catch(error => {
+  console.error(error);
+});
+
+
+
+
+<-------------------------------------------------------------------->
+
+
+<------------------------Monthly wise total sales--------------------------->
+
+SELECT 
+    DATE_FORMAT(end_date, '%M') AS month,
+    SUM(quantity) AS total_sales
+FROM 
+    sales
+WHERE 
+    user_id = 26
+    AND end_date >= '2023-04-01 00:00:00'
+GROUP BY 
+    DATE_FORMAT(end_date, '%M')
+ORDER BY 
+    DATE_FORMAT(end_date, '%m');
+
+
+explanation:
+Out of the given datas we just calculate the total sum of the quantity for each month.
+  user_id = 26
+  AND end_date >= '2023-04-01 00:00:00'
+this condition is applied for the specific user_id and the starting date equals to or greater than end_date.
+
+GROUP BY manage rows
+ORDER by arrange in ascending order.
+
+
+Equivalent sequelized code
+
+try {
+    const salesData = await Sales.findAll({
+      attributes: [
+        [Sequelize.literal("DATE_FORMAT(end_date, '%M')"), 'month'],
+        [Sequelize.fn('SUM', Sequelize.col('quantity')), 'total_sales']
+      ],
+      where: {
+        user_id: 26,
+        end_date: {
+          [Op.gte]: '2023-04-01 00:00:00'
+        }
+      },
+      group: [Sequelize.literal("DATE_FORMAT(end_date, '%M')")],
+      order: [Sequelize.literal("DATE_FORMAT(end_date, '%m')")],
+      raw: true,
+      nest: true
+    });
+
+    console.log(salesData);
+  } catch (error) {
+    console.error(error);
+  }
+
+  <----------------------------------------------------------------------------------------------->

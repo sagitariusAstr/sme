@@ -1,0 +1,49 @@
+Whole operation:
+-> SD-b admin layout used 
+-> Excel file upload operation by implementing multer xlsx-JSON converter.
+-> .env file holds backend endpoint configuration
+-> config/axios.config.js/ contains axios configuration with timeout,headers.
+-> the login.js page records the input form  and uses the instance of AuthService to access login function
+   and perform axios post operation.
+
+
+------NOTE------
+-> API response cannot be sent through jsx file
+
+----NOTE----
+-> I haven't implemented separate modules for header and footers.
+
+
+<------------------------------------GEO LOCATION API---------------------------->
+
+-> GEO location API
+
+
+Geolocation.getCurrentPosition(): Retrieves the device's current location.
+
+
+
+
+
+
+
+function findMyLocation() {
+    function success(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        data.latitude = latitude;
+        data.longitude = longitude;
+        alert(JSON.stringify(data));
+    }
+  
+    function error() {
+        alert("Allow the location setting")
+        findMyLocation()
+    }
+  
+    if (!navigator.geolocation) {
+        alert("Geolocation not supported by your browser")
+    } else {
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+  }

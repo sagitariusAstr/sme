@@ -1,0 +1,23 @@
+{
+    "development": {
+      "username": "smeappbi_sme",
+      "password": "R{wVtCEPAaft",
+      "database": "smeappbi_sme",
+      "host": "localhost",
+      "dialect": "mariadb"
+    },
+    "test": {
+      "username": "smeappbi_sme",
+      "password": "R{wVtCEPAaft",
+      "database": "smeappbi_sme",
+      "host": "localhost",
+      "dialect": "mariadb"
+    },
+    "production": {
+      "username": "smeappbi_sme",
+      "password": "R{wVtCEPAaft",
+      "database": "smeappbi_sme",
+      "host": "localhost",
+      "dialect": "mariadb"
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "name": "fullstack-app",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+      "start": "concurrently \"npm start --prefix dashboardbackup\" \"npm start --prefix dashboardfrontendbackup\"",
+      "install": "npm install --prefix dashboardbackup && npm install --prefix dashboardfrontendbackup",
+      "client": "npm start --prefix dashboardfrontendbackup",
+      "server": "npm start --prefix dashboardbackup"
+    },
+    "devDependencies": {
+      "concurrently": "^7.6.0"
+    }
+  }
+  

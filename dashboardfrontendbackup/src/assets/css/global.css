@@ -1,0 +1,23 @@
+/* .body-bg{
+    background-image: url(../images/bg-image.jpg);
+     background-size: contain; 
+      background-repeat:no-repeat; 
+    background-size:cover;  
+ 
+    
+} */
+
+
+
+
+/* styling form pages */
+
+.h1-text-form{
+  font-size: 30px !important;
+}
+
+
+.location-btn{
+  position: relative;
+  margin: 0 5px 10px 2px ;
+}
